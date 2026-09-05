@@ -15,6 +15,7 @@ state/
 traces/
 evaluation-output/
 evaluation-runtime/
+qa-evaluation-output/
 
 # Python caches
 __pycache__/

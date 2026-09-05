@@ -13,6 +13,7 @@ from scipy.ndimage import binary_closing, binary_fill_holes, binary_opening, lab
 from rs_agent.domain import Artifact, ExecutionPlan, Job, QualityResult, Stage
 from rs_agent.storage import LocalArtifactStore
 from rs_agent.tools.image_adapter import ImageAdapter
+from rs_agent.tools.quality import MaskQualityGate
 
 
 @dataclass
@@ -23,7 +24,7 @@ class StageOutput:
 
 
 class DeterministicToolchain:
-    """Phase 1 deterministic water-extraction route for optical and SAR imagery."""
+    """Deterministic optical/SAR water and optical building extraction tools."""
 
     def __init__(self, adapter: ImageAdapter | None = None) -> None:
         self.adapter = adapter or ImageAdapter()
@@ -72,10 +73,13 @@ class DeterministicToolchain:
         if stage is Stage.INTERPRET:
             image = self.adapter.read(job.request.image_uri)
             normalized = np.load(store.path(self._artifact(job, "preprocessed_array")))
-            mask, details = self._extract_water(
-                image.pixels if image.bands >= 4 or job.request.sensor_type == "sar" else normalized,
-                job.request.sensor_type, job.request.band_indices, parameters
-            )
+            source = image.pixels if image.bands >= 4 or job.request.sensor_type == "sar" else normalized
+            if job.request.task_type == "building_extraction":
+                mask, details = self._extract_buildings(source, job.request.band_indices, parameters)
+            else:
+                mask, details = self._extract_water(
+                    source, job.request.sensor_type, job.request.band_indices, parameters
+                )
             nodata = image.source_profile.get("nodata")
             valid = np.isfinite(image.pixels).all(axis=-1)
             if nodata is not None:
@@ -86,27 +90,30 @@ class DeterministicToolchain:
             image = self.adapter.read(job.request.image_uri)
             raw = self._read_mask(self._artifact(job, "raw_mask"))
             cleaned = self._cleanup(raw, int(parameters.get("min_component_pixels", 9)))
-            mask_output = self._mask_output("water_mask_geotiff", cleaned, image, store, {})
-            geojson = self._polygonize(cleaned, image)
-            vector = store.put_json("water_vectors_geojson", geojson)
+            kind = self._mask_kind(job)
+            mask_output = self._mask_output(kind, cleaned, image, store, {})
+            geojson = self._polygonize(cleaned, image, job.request.task_type)
+            vector = store.put_json(self._vector_kind(job), geojson)
             return StageOutput(
                 mask_output.artifacts + [vector], {"feature_count": len(geojson["features"])}
             )
         if stage is Stage.QA:
             image = self.adapter.read(job.request.image_uri)
-            mask = self._read_mask(self._artifact(job, "water_mask_geotiff"))
+            mask = self._read_mask(self._artifact(job, self._mask_kind(job)))
             stats = self._statistics(mask, image)
             minimum = float(parameters.get("min_coverage_fraction", 0))
             maximum = float(parameters.get("max_coverage_fraction", 0.98))
-            passed = minimum < stats["coverage_fraction"] < maximum
+            assessment = MaskQualityGate.assess(
+                stats["coverage_fraction"], minimum, maximum, geometry_valid=True, input_valid=True
+            )
             quality = QualityResult(
-                passed=passed,
+                passed=assessment.passed,
                 metrics={
-                    "water_pixels": float(stats["water_pixels"]),
+                    "foreground_pixels": float(stats["foreground_pixels"]),
                     "coverage_fraction": stats["coverage_fraction"],
-                    "water_area_m2": stats["water_area_m2"],
+                    "foreground_area_m2": stats["foreground_area_m2"],
                 },
-                notes=[] if passed else ["Empty or implausibly dominant water mask"],
+                notes=assessment.reasons,
             )
             return StageOutput([store.put_json("statistics_json", stats)], stats, quality)
         stats = json.loads(store.path(self._artifact(job, "statistics_json")).read_text())
@@ -114,6 +121,14 @@ class DeterministicToolchain:
         return StageOutput(
             [store.put_bytes("report_markdown", report.encode(), "md")], {"report": "generated"}
         )
+
+    @staticmethod
+    def _mask_kind(job: Job) -> str:
+        return "water_mask_geotiff" if job.request.task_type == "water_extraction" else "building_mask_geotiff"
+
+    @staticmethod
+    def _vector_kind(job: Job) -> str:
+        return "water_vectors_geojson" if job.request.task_type == "water_extraction" else "building_vectors_geojson"
 
     @staticmethod
     def _routing_diagnostics(
@@ -180,6 +195,19 @@ class DeterministicToolchain:
         return score >= threshold, {"blue_score_threshold": threshold}
 
     @staticmethod
+    def _extract_buildings(
+        image: np.ndarray, bands: dict[str, int], parameters: dict[str, Any]
+    ) -> tuple[np.ndarray, dict[str, float]]:
+        """NDBI-like optical baseline; needs NIR and SWIR, never used for SAR."""
+        nir = bands.get("nir", 7 if image.shape[-1] > 7 else -1)
+        swir = bands.get("swir", 11 if image.shape[-1] > 11 else -1)
+        if not (0 <= nir < image.shape[-1] and 0 <= swir < image.shape[-1]):
+            raise ValueError("optical_built_index requires configured NIR and SWIR bands")
+        index = (image[..., swir] - image[..., nir]) / (image[..., swir] + image[..., nir] + 1e-6)
+        threshold = float(parameters.get("threshold", 0.0))
+        return index > threshold, {"built_index_threshold": threshold}
+
+    @staticmethod
     def _cleanup(mask: np.ndarray, min_component_pixels: int = 9) -> np.ndarray:
         cleaned = binary_opening(mask, structure=np.ones((3, 3)))
         cleaned = binary_closing(cleaned, structure=np.ones((5, 5)))
@@ -202,7 +230,7 @@ class DeterministicToolchain:
             destination = Path(temp) / "mask.tif"
             self.adapter.write_mask(destination, mask, image)
             artifact = store.put_bytes(kind, destination.read_bytes(), "tif")
-        return StageOutput([artifact], {**summary, "water_pixels": int(mask.sum())})
+        return StageOutput([artifact], {**summary, "foreground_pixels": int(mask.sum())})
 
     @staticmethod
     def _read_mask(artifact: Artifact) -> np.ndarray:
@@ -212,12 +240,12 @@ class DeterministicToolchain:
             return src.read(1).astype(bool)
 
     @staticmethod
-    def _polygonize(mask: np.ndarray, image: Any) -> dict[str, Any]:
+    def _polygonize(mask: np.ndarray, image: Any, task_type: str) -> dict[str, Any]:
         features = []
         for geometry, value in shapes(mask.astype("uint8"), mask=mask, transform=image.transform):
             if value == 1:
                 features.append(
-                    {"type": "Feature", "properties": {"class": "water"}, "geometry": geometry}
+                    {"type": "Feature", "properties": {"class": task_type.removesuffix("_extraction")}, "geometry": geometry}
                 )
         result: dict[str, Any] = {"type": "FeatureCollection", "features": features}
         if image.crs:
@@ -235,10 +263,13 @@ class DeterministicToolchain:
             image.crs and "GEOGCS" not in image.crs.upper() and "EPSG:4326" not in image.crs.upper()
         )
         return {
-            "water_pixels": pixels,
+            "foreground_pixels": pixels,
             "total_pixels": int(mask.size),
             "coverage_fraction": float(pixels / mask.size),
             "pixel_area_native_units": float(pixel_area),
+            "foreground_area_m2": float(pixels * pixel_area) if has_metric_area else 0.0,
+            # Compatibility aliases used by existing water reports and clients.
+            "water_pixels": pixels,
             "water_area_m2": float(pixels * pixel_area) if has_metric_area else 0.0,
         }
 
@@ -246,13 +277,13 @@ class DeterministicToolchain:
     def _report(job: Job, stats: dict[str, Any]) -> str:
         return "\n".join(
             [
-                "# Remote-sensing water extraction report",
+                f"# Remote-sensing {job.request.task_type} report",
                 "",
                 f"Job: `{job.job_id}`",
                 f"Sensor: `{job.request.sensor_type}`",
-                f"Water pixels: {stats['water_pixels']}",
+                f"Foreground pixels: {stats['foreground_pixels']}",
                 f"Coverage: {stats['coverage_fraction']:.2%}",
-                f"Water area (m²): {stats['water_area_m2']:.2f}",
+                f"Foreground area (m²): {stats['foreground_area_m2']:.2f}",
                 "",
                 "This Phase 1 result uses deterministic processing.",
             ]

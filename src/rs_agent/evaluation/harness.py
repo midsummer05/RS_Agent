@@ -240,9 +240,8 @@ class EvaluationHarness:
                 False,
                 "workflow did not complete",
             )
-        mask = next(
-            (item for item in reversed(job.artifacts) if item.kind == "water_mask_geotiff"), None
-        )
+        mask_kind = "water_mask_geotiff" if case.task_type == "water_extraction" else "building_mask_geotiff"
+        mask = next((item for item in reversed(job.artifacts) if item.kind == mask_kind), None)
         if mask is None:
             return CaseResult(
                 case.case_id,

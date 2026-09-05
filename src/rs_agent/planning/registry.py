@@ -15,7 +15,7 @@ class ToolRegistry:
     def _defaults() -> list[ToolContract]:
         common = {
             "supported_sensor_types": ["optical", "sar"],
-            "supported_task_types": ["water_extraction"],
+            "supported_task_types": ["water_extraction", "building_extraction"],
         }
         return [
             ToolContract(
@@ -26,6 +26,16 @@ class ToolRegistry:
                 applicable_stages=[Stage.PREPROCESS],
                 parameter_names=[],
                 **common,
+            ),
+            ToolContract(
+                name="optical_built_index",
+                version="0.1.0",
+                input_kinds=["preprocessed_array"],
+                output_kinds=["raw_mask"],
+                applicable_stages=[Stage.INTERPRET],
+                supported_sensor_types=["optical"],
+                supported_task_types=["building_extraction"],
+                parameter_names=["threshold"],
             ),
             ToolContract(
                 name="optical_ndwi",
@@ -51,15 +61,15 @@ class ToolRegistry:
                 name="morphology_and_polygonize",
                 version="0.1.0",
                 input_kinds=["raw_mask"],
-                output_kinds=["water_mask_geotiff", "water_vectors_geojson"],
+                output_kinds=["classification_mask_geotiff", "classification_vectors_geojson"],
                 applicable_stages=[Stage.POSTPROCESS],
                 parameter_names=["min_component_pixels"],
                 **common,
             ),
             ToolContract(
-                name="water_statistics_and_geometry_qa",
+                name="mask_statistics_and_geometry_qa",
                 version="0.1.0",
-                input_kinds=["water_mask_geotiff"],
+                input_kinds=["classification_mask_geotiff"],
                 output_kinds=["statistics_json"],
                 applicable_stages=[Stage.QA],
                 parameter_names=["min_coverage_fraction", "max_coverage_fraction"],
@@ -110,6 +120,11 @@ class ToolRegistry:
                 {"name": "conservative_water", "parameters": {"threshold": 0.1}, "when": "avoid weak water candidates"},
                 {"name": "permissive_water", "parameters": {"threshold": -0.1}, "when": "retain low-contrast water candidates"},
             ],
+            "optical_built_index": [
+                {"name": "balanced", "parameters": {"threshold": 0.0}, "when": "default built-index separation"},
+                {"name": "conservative_buildings", "parameters": {"threshold": 0.1}, "when": "avoid bright non-building surfaces"},
+                {"name": "permissive_buildings", "parameters": {"threshold": -0.1}, "when": "retain weak built-up candidates"},
+            ],
             "sar_adaptive_threshold": [
                 {"name": "conservative_water", "parameters": {"percentile": 25.0}, "when": "avoid broad low-backscatter masks"},
                 {"name": "balanced", "parameters": {"percentile": 35.0}, "when": "default"},
@@ -120,7 +135,7 @@ class ToolRegistry:
                 {"name": "balanced", "parameters": {"min_component_pixels": 9.0}, "when": "default"},
                 {"name": "noise_reduction", "parameters": {"min_component_pixels": 25.0}, "when": "speckle/noise dominates"},
             ],
-            "water_statistics_and_geometry_qa": [
+            "mask_statistics_and_geometry_qa": [
                 {"name": "strict", "parameters": {"min_coverage_fraction": 0.0, "max_coverage_fraction": 0.9}, "when": "dominant masks are implausible"},
                 {"name": "balanced", "parameters": {"min_coverage_fraction": 0.0, "max_coverage_fraction": 0.98}, "when": "default"},
                 {"name": "permissive", "parameters": {"min_coverage_fraction": 0.0, "max_coverage_fraction": 0.995}, "when": "large water extent is expected"},

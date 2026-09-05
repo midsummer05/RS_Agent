@@ -70,18 +70,21 @@ class RuleRouter:
     def plan(self, stage: Stage, job: Job) -> ExecutionPlan:
         tool = {
             Stage.PREPROCESS: "image_adapter_normalize",
-            Stage.INTERPRET: "optical_ndwi"
+            Stage.INTERPRET: "optical_built_index"
+            if job.request.task_type == "building_extraction"
+            else "optical_ndwi"
             if job.request.sensor_type == "optical"
             else "sar_adaptive_threshold",
             Stage.POSTPROCESS: "morphology_and_polygonize",
-            Stage.QA: "water_statistics_and_geometry_qa",
+            Stage.QA: "mask_statistics_and_geometry_qa",
             Stage.REPORT: "markdown_report",
         }[stage]
         parameters: dict[str, Any] = {
             "optical_ndwi": {"threshold": 0.0},
+            "optical_built_index": {"threshold": 0.0},
             "sar_adaptive_threshold": {"percentile": 35.0},
             "morphology_and_polygonize": {"min_component_pixels": 9.0},
-            "water_statistics_and_geometry_qa": {
+            "mask_statistics_and_geometry_qa": {
                 "min_coverage_fraction": 0.0,
                 "max_coverage_fraction": 0.98,
             },

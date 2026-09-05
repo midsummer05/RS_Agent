@@ -71,6 +71,12 @@ Phase 4 的框架测试不等于数据集和真实模型评测已经完成。固
 
 数据采用 Sen1Floods11 v1.1 的 12 个测试切片 × 两种传感器；10/20/30m 为派生网格。STAC 标记 proprietary，不将其宣称为开放许可或随仓库分发。详见 [Phase 4 评测说明](docs/PHASE4_EVALUATION.md)。实际完成情况以有日期的报告为准。
 
+## Building task and QA evaluation
+
+光学多光谱输入可提交 `task_type: "building_extraction"`；当前基线为受约束的 NIR/SWIR built-index，必须明确提供或具备 NIR、SWIR 波段。SAR 建筑物请求会在契约层拒绝。其掩膜、矢量、统计和报告与水体任务走同一状态机和 checkpoint 链路。
+
+QA 召回率评测独立于遥感分割指标：`.venv/Scripts/python.exe scripts/evaluate_qa.py`。固定异常与正常对照、指标定义和边界见 [QA 评测说明](docs/QA_EVALUATION.md)。
+
 ## Phase 5 web demo
 
 Web UI 是正式演示入口：<http://localhost:8080>。它支持上传/选择影像、实时阶段状态、审批、artifact 下载与文本预览，以及 trace 时间线。API 使用 SSE 推送 job 状态；浏览器仅经 API 访问产物，不读取容器中的原始文件路径或服务端密钥。

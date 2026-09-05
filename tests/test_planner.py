@@ -34,7 +34,7 @@ def test_planner_calls_llm_at_all_four_documented_planning_points():
             '{"tool":"image_adapter_normalize","parameters":{}}',
             '{"tool":"sar_adaptive_threshold","parameters":{"percentile":35}}',
             '{"tool":"morphology_and_polygonize","parameters":{"min_component_pixels":9}}',
-            '{"tool":"water_statistics_and_geometry_qa","parameters":{"min_coverage_fraction":0,"max_coverage_fraction":0.98}}',
+                '{"tool":"mask_statistics_and_geometry_qa","parameters":{"min_coverage_fraction":0,"max_coverage_fraction":0.98}}',
         ]
     )
     planner = Planner(client=client)
@@ -54,3 +54,18 @@ def test_planner_context_has_artifact_references_and_diagnostics_not_raw_data():
     assert context["routing_policy"]["decision_type"] == "tool_and_registered_parameter_profile"
     assert context["routing_policy"]["registered_parameter_profiles"]
     assert "pixel_values" not in str(context)
+
+
+def test_planner_accepts_registered_optical_building_profile():
+    planner = Planner(
+        client=ScriptedClient(
+            ['{"tool":"optical_built_index","parameters":{"threshold":0.0},"rationale":"SWIR and NIR diagnostics support balanced built-index"}']
+        )
+    )
+    plan = planner.plan(
+        Stage.INTERPRET,
+        Job(request=JobRequest(task_type="building_extraction", sensor_type="optical")),
+    )
+    assert plan.tool == "optical_built_index"
+    assert plan.parameters == {"threshold": 0.0}
+    assert plan.fallback_tool == "optical_built_index"

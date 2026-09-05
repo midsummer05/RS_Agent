@@ -5,7 +5,7 @@ from enum import StrEnum
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 def utcnow() -> datetime:
@@ -109,6 +109,12 @@ class JobRequest(BaseModel):
     fail_once_stage: Stage | None = None
     failure_injections: list[FailureInjection] = Field(default_factory=list)
     injection_stage: Stage = Stage.INTERPRET
+
+    @model_validator(mode="after")
+    def validate_task_sensor_pair(self) -> JobRequest:
+        if self.task_type == "building_extraction" and self.sensor_type != "optical":
+            raise ValueError("building_extraction is supported only for optical imagery")
+        return self
 
 
 class Job(BaseModel):

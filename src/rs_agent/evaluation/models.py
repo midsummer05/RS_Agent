@@ -22,7 +22,7 @@ class EvaluationCase(BaseModel):
 
     case_id: str
     split: Literal["evaluation", "smoke"] = "evaluation"
-    task_type: Literal["water_extraction"] = "water_extraction"
+    task_type: Literal["water_extraction", "building_extraction"] = "water_extraction"
     sensor_type: Literal["optical", "sar"]
     image_uri: str
     label_uri: str

@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.5694610778443113,
+  "f1": 0.7256772224341854,
+  "area_error_fraction": 0.4028031687995125,
+  "object_count_error": 35,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\7fcf36b6bab34b93b109818108af3c81\\rule\\evaluation_USA_1049586_optical_10m"
+}

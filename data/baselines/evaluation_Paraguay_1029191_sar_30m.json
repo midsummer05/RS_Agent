@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.5509847337140193,
+  "f1": 0.7104966563979263,
+  "area_error_fraction": 0.6209137455691217,
+  "object_count_error": 24,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\36d302bd17cc4e4e8e717e9271920de4\\rule\\evaluation_Paraguay_1029191_sar_30m"
+}

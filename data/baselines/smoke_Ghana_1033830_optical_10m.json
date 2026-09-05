@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.8320775897814501,
+  "f1": 0.9083431776278746,
+  "area_error_fraction": 0.09445969684538273,
+  "object_count_error": 67,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\smoke-\\20260905T084240.061842Z\\evidence\\7df4d7891597415587f66f52450bc933\\rule\\smoke_Ghana_1033830_optical_10m"
+}

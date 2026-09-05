@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.004550669216061186,
+  "f1": 0.00906010887357722,
+  "area_error_fraction": 40.64448051948052,
+  "object_count_error": 374,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\fba0443334824dcdb55f4a8571544c14\\rule\\evaluation_Nigeria_22088_sar_10m"
+}

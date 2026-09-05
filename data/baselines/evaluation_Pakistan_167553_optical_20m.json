@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.0,
+  "f1": 0.0,
+  "area_error_fraction": 0.28104575163398693,
+  "object_count_error": 5,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\74471009f53743b6b78e2249a8d8c3fc\\rule\\evaluation_Pakistan_167553_optical_20m"
+}

@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 6.352836541515787e-05,
+  "f1": 0.00012704865963664082,
+  "area_error_fraction": 6557.166666666667,
+  "object_count_error": 357,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\845c0dcfe9494bcbb0b955dcadb9dc7c\\rule\\evaluation_Somalia_166342_sar_10m"
+}

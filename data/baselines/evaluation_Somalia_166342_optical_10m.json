@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.0,
+  "f1": 0.0,
+  "area_error_fraction": 1.0,
+  "object_count_error": 11,
+  "status": "waiting_human",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\bb569259fc13429bb14a36bfc6389234\\rule\\evaluation_Somalia_166342_optical_10m"
+}

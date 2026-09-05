@@ -1,0 +1,61 @@
+{
+  "case_id": "evaluation_Sri-Lanka_1049830_optical_30m",
+  "split": "evaluation",
+  "sensor_type": "optical",
+  "image_uri": "../samples/sen1floods11-v1.1/Sri-Lanka_1049830/S2Hand_30m.tif",
+  "label_uri": "../samples/sen1floods11-v1.1/Sri-Lanka_1049830/LabelHand_30m.tif",
+  "source": {
+    "name": "Sen1Floods11 hand-labelled v1.1",
+    "url": "https://storage.googleapis.com/sen1floods11/v1.1/",
+    "license": "proprietary (publisher STAC); public research access; redistribution rights not established"
+  },
+  "acquisition_date": "2017-05-28",
+  "bands": {
+    "green": 2,
+    "nir": 7,
+    "red": 3,
+    "blue": 1
+  },
+  "crs": "EPSG:32644",
+  "resolution": 30,
+  "bounds": [
+    509620.14539987803,
+    686311.2834472819,
+    514720.14539987803,
+    691411.2834472819
+  ],
+  "image_sha256": "f03a9e86b27627e211206158fb072d35330d057de6d6117d5187beb2c0355955",
+  "label_sha256": "a3c743450b71e81cf1bb3603274f9611787634c00e2f83b8ae7b5c9a6fec1341",
+  "expected_interpret_tool": "optical_ndwi",
+  "dataset_version": "phase4-sen1floods11-v1.1-subset-v1",
+  "baseline_metrics": {
+    "reference": "../baselines/evaluation_Sri-Lanka_1049830_optical_30m.json",
+    "algorithm_version": "deterministic-water-v2"
+  },
+  "label_classes": {
+    "-1": "ignore",
+    "0": "non-water",
+    "1": "water"
+  },
+  "provenance": {
+    "chip": "Sri-Lanka_1049830",
+    "original_split": "test",
+    "crop": "full original chip; no spatial cropping",
+    "native_ground_resolution_m": 10,
+    "resampling": "UTM bilinear imagery / nearest labels; 10/20/30m are derived, not native sensor grades",
+    "source_files": {
+      "S1Hand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/S1Hand/Sri-Lanka_1049830_S1Hand.tif",
+        "sha256": "e82f3c2780d62a5651c62446ad24920c9833e4a9f0f0704fe465ebb7ea75e53a"
+      },
+      "S2Hand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/S2Hand/Sri-Lanka_1049830_S2Hand.tif",
+        "sha256": "7fc267479e95174b3a407e275c359dfca5213d8d7f0f2c38a415532c6847a123"
+      },
+      "LabelHand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/LabelHand/Sri-Lanka_1049830_LabelHand.tif",
+        "sha256": "c805545a4b7f69133ad24be229dafaa463f8970e03ea6da22d4a47e587881544"
+      }
+    }
+  }
+}

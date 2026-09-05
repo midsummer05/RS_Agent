@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.7978064113424584,
+  "f1": 0.8875331696550356,
+  "area_error_fraction": 0.1970489604292421,
+  "object_count_error": 61,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\smoke-\\20260905T084240.061842Z\\evidence\\eced811f175a41b186107aec8cabeeae\\rule\\smoke_India_1018317_sar_10m"
+}

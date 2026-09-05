@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.47342948871531937,
+  "f1": 0.6426225243097337,
+  "area_error_fraction": 0.5250155897731088,
+  "object_count_error": 94,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\23519cabda0446458cbc2ea12bd055ce\\rule\\evaluation_Mekong_1443339_sar_30m"
+}

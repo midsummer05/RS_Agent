@@ -1,0 +1,61 @@
+{
+  "case_id": "smoke_Ghana_1033830_optical_10m",
+  "split": "smoke",
+  "sensor_type": "optical",
+  "image_uri": "../samples/sen1floods11-v1.1/Ghana_1033830/S2Hand_10m.tif",
+  "label_uri": "../samples/sen1floods11-v1.1/Ghana_1033830/LabelHand_10m.tif",
+  "source": {
+    "name": "Sen1Floods11 hand-labelled v1.1",
+    "url": "https://storage.googleapis.com/sen1floods11/v1.1/",
+    "license": "proprietary (publisher STAC); public research access; redistribution rights not established"
+  },
+  "acquisition_date": "2018-09-19",
+  "bands": {
+    "green": 2,
+    "nir": 7,
+    "red": 3,
+    "blue": 1
+  },
+  "crs": "EPSG:32630",
+  "resolution": 10,
+  "bounds": [
+    693169.6881265104,
+    1012204.4078526491,
+    698259.6881265104,
+    1017324.4078526491
+  ],
+  "image_sha256": "5b32a2483c8f601106964e051365a70d11e298a635a212ca97d5548eedc06bec",
+  "label_sha256": "5cbce1d6ceda28b35007cc428d7bc813a91383f27e16ff351c674d724f93e1e5",
+  "expected_interpret_tool": "optical_ndwi",
+  "dataset_version": "phase4-sen1floods11-v1.1-subset-v1",
+  "baseline_metrics": {
+    "reference": "../baselines/smoke_Ghana_1033830_optical_10m.json",
+    "algorithm_version": "deterministic-water-v2"
+  },
+  "label_classes": {
+    "-1": "ignore",
+    "0": "non-water",
+    "1": "water"
+  },
+  "provenance": {
+    "chip": "Ghana_1033830",
+    "original_split": "valid",
+    "crop": "full original chip; no spatial cropping",
+    "native_ground_resolution_m": 10,
+    "resampling": "UTM bilinear imagery / nearest labels; 10/20/30m are derived, not native sensor grades",
+    "source_files": {
+      "S1Hand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/S1Hand/Ghana_1033830_S1Hand.tif",
+        "sha256": "c47102e1159481bfc0c5e97795d371224991930c85e9bdb11654cf72a6c1d683"
+      },
+      "S2Hand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/S2Hand/Ghana_1033830_S2Hand.tif",
+        "sha256": "aebdf646e05e688da22d47ba947045f6af5df5e9d4b0d669903f998509043c69"
+      },
+      "LabelHand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/LabelHand/Ghana_1033830_LabelHand.tif",
+        "sha256": "dd9a3431971bbff8204a37dcb8699c23e896e3d2e48dda5fd0abeccfb50f8d13"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+.env
+.env.*
+.venv
+.git
+data
+artifacts
+state
+traces
+evaluation-output
+evaluation-runtime
+**/__pycache__
+.pytest_cache

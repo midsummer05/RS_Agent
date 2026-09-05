@@ -1,0 +1,24 @@
+# Local secrets and configuration
+.env
+.env.*
+!.env.example
+
+# Local artifacts, datasets, model weights, and runtime state
+artifacts/
+data/raw/
+data/labels/
+data/models/
+data/sources/
+data/samples/sen1floods11-v1.1/
+data/*.log
+state/
+traces/
+evaluation-output/
+evaluation-runtime/
+
+# Python caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+*.egg-info/

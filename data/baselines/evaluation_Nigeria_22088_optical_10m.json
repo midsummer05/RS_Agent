@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.16264090177133655,
+  "f1": 0.27977839335180055,
+  "area_error_fraction": 0.827922077922078,
+  "object_count_error": 12,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\f0cd478aa0d442b1bbda05f6b39f5883\\rule\\evaluation_Nigeria_22088_optical_10m"
+}

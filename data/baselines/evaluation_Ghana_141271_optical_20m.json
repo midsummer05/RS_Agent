@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.0,
+  "f1": 0.0,
+  "area_error_fraction": 1.0,
+  "object_count_error": 2,
+  "status": "waiting_human",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\216d381b0e8740beb4cae651cf0254e5\\rule\\evaluation_Ghana_141271_optical_20m"
+}

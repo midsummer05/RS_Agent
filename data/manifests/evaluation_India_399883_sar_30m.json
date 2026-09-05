@@ -1,0 +1,59 @@
+{
+  "case_id": "evaluation_India_399883_sar_30m",
+  "split": "evaluation",
+  "sensor_type": "sar",
+  "image_uri": "../samples/sen1floods11-v1.1/India_399883/S1Hand_30m.tif",
+  "label_uri": "../samples/sen1floods11-v1.1/India_399883/LabelHand_30m.tif",
+  "source": {
+    "name": "Sen1Floods11 hand-labelled v1.1",
+    "url": "https://storage.googleapis.com/sen1floods11/v1.1/",
+    "license": "proprietary (publisher STAC); public research access; redistribution rights not established"
+  },
+  "acquisition_date": "2016-08-12",
+  "bands": {
+    "vv": 0,
+    "vh": 1
+  },
+  "crs": "EPSG:32646",
+  "resolution": 30,
+  "bounds": [
+    531956.2141957872,
+    2950607.805225149,
+    536546.2141957872,
+    2955737.805225149
+  ],
+  "image_sha256": "0185b09725763600dd6e22ebd606fe77036aca22d2ba3456e37a96c61e75cf02",
+  "label_sha256": "2d1202e03d8707b77bce95d11bda85cbd178ae16295e37735b3ca3b2ccbcac62",
+  "expected_interpret_tool": "sar_adaptive_threshold",
+  "dataset_version": "phase4-sen1floods11-v1.1-subset-v1",
+  "baseline_metrics": {
+    "reference": "../baselines/evaluation_India_399883_sar_30m.json",
+    "algorithm_version": "deterministic-water-v2"
+  },
+  "label_classes": {
+    "-1": "ignore",
+    "0": "non-water",
+    "1": "water"
+  },
+  "provenance": {
+    "chip": "India_399883",
+    "original_split": "test",
+    "crop": "full original chip; no spatial cropping",
+    "native_ground_resolution_m": 10,
+    "resampling": "UTM bilinear imagery / nearest labels; 10/20/30m are derived, not native sensor grades",
+    "source_files": {
+      "S1Hand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/S1Hand/India_399883_S1Hand.tif",
+        "sha256": "3cdb20bbf53e1500de925233db53ab41b49f02116141d2d17aa1b3700551c482"
+      },
+      "S2Hand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/S2Hand/India_399883_S2Hand.tif",
+        "sha256": "3af2d0b68c1615fbf3ccf93a1ceeaee50145810854c9bab14d8f9ed77c584079"
+      },
+      "LabelHand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/LabelHand/India_399883_LabelHand.tif",
+        "sha256": "2024277074e45016fa82d8300353d8ff1476dfe68eb72d6623b838b1d4dfe973"
+      }
+    }
+  }
+}

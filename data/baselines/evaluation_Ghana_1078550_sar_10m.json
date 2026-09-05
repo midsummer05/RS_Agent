@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.0032705186108082855,
+  "f1": 0.006519714374417882,
+  "area_error_fraction": 68.12336719883889,
+  "object_count_error": 265,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\d358f389221c4198afec7c1f0429f41a\\rule\\evaluation_Ghana_1078550_sar_10m"
+}

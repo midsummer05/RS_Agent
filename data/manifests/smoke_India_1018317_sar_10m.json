@@ -1,0 +1,59 @@
+{
+  "case_id": "smoke_India_1018317_sar_10m",
+  "split": "smoke",
+  "sensor_type": "sar",
+  "image_uri": "../samples/sen1floods11-v1.1/India_1018317/S1Hand_10m.tif",
+  "label_uri": "../samples/sen1floods11-v1.1/India_1018317/LabelHand_10m.tif",
+  "source": {
+    "name": "Sen1Floods11 hand-labelled v1.1",
+    "url": "https://storage.googleapis.com/sen1floods11/v1.1/",
+    "license": "proprietary (publisher STAC); public research access; redistribution rights not established"
+  },
+  "acquisition_date": "2016-08-12",
+  "bands": {
+    "vv": 0,
+    "vh": 1
+  },
+  "crs": "EPSG:32646",
+  "resolution": 10,
+  "bounds": [
+    477026.1427088911,
+    2935323.8944230047,
+    481616.1427088911,
+    2940423.8944230047
+  ],
+  "image_sha256": "5612437d9c498caa89fb36de7e925db732c9e7476ee6936776a2aaf954fc9bc4",
+  "label_sha256": "0ec97058e8fe4efdb568a7bccebbe6a4699ae67f0e8ee7b56a7ae86cc2290ff6",
+  "expected_interpret_tool": "sar_adaptive_threshold",
+  "dataset_version": "phase4-sen1floods11-v1.1-subset-v1",
+  "baseline_metrics": {
+    "reference": "../baselines/smoke_India_1018317_sar_10m.json",
+    "algorithm_version": "deterministic-water-v2"
+  },
+  "label_classes": {
+    "-1": "ignore",
+    "0": "non-water",
+    "1": "water"
+  },
+  "provenance": {
+    "chip": "India_1018317",
+    "original_split": "valid",
+    "crop": "full original chip; no spatial cropping",
+    "native_ground_resolution_m": 10,
+    "resampling": "UTM bilinear imagery / nearest labels; 10/20/30m are derived, not native sensor grades",
+    "source_files": {
+      "S1Hand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/S1Hand/India_1018317_S1Hand.tif",
+        "sha256": "1a84fbcb7a0db45a5187ebd4acc052c9bf93ddad4a443425f173c01e00871300"
+      },
+      "S2Hand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/S2Hand/India_1018317_S2Hand.tif",
+        "sha256": "5abc50957e9f234ee9b273f017fa0a633e1c69e02ee363344df23f7d0d681f31"
+      },
+      "LabelHand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/LabelHand/India_1018317_LabelHand.tif",
+        "sha256": "f6e9adf73f782c7778c7ea911d6c8bc86300d9d9cafc139c5215cc3dfeb84a23"
+      }
+    }
+  }
+}

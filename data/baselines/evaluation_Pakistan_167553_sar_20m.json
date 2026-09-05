@@ -1,0 +1,9 @@
+{
+  "version": "deterministic-water-v2",
+  "iou": 0.002416313059877416,
+  "f1": 0.004820977129754836,
+  "area_error_fraction": 53.58496732026144,
+  "object_count_error": 57,
+  "status": "completed",
+  "evidence_dir": "D:\\code\\LLM_dev\\RS_Agent2\\evaluation-output\\phase4-\\20260905T084252.230423Z\\evidence\\adfa7be82303437b91afa05ebf4b94e8\\rule\\evaluation_Pakistan_167553_sar_20m"
+}

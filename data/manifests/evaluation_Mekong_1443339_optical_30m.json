@@ -1,0 +1,61 @@
+{
+  "case_id": "evaluation_Mekong_1443339_optical_30m",
+  "split": "evaluation",
+  "sensor_type": "optical",
+  "image_uri": "../samples/sen1floods11-v1.1/Mekong_1443339/S2Hand_30m.tif",
+  "label_uri": "../samples/sen1floods11-v1.1/Mekong_1443339/LabelHand_30m.tif",
+  "source": {
+    "name": "Sen1Floods11 hand-labelled v1.1",
+    "url": "https://storage.googleapis.com/sen1floods11/v1.1/",
+    "license": "proprietary (publisher STAC); public research access; redistribution rights not established"
+  },
+  "acquisition_date": "2018-08-04",
+  "bands": {
+    "green": 2,
+    "nir": 7,
+    "red": 3,
+    "blue": 1
+  },
+  "crs": "EPSG:32648",
+  "resolution": 30,
+  "bounds": [
+    595421.1916782933,
+    1357681.0163612496,
+    600461.1916782933,
+    1362811.0163612496
+  ],
+  "image_sha256": "07d03bd8b3e00c7545cd12358ae049cbda060f5c04dd0f1ead8ee5004c195201",
+  "label_sha256": "0a9159642c8e25d784e6aeeba699a5e3cdda71f93bf2daa01fbe586354a3c112",
+  "expected_interpret_tool": "optical_ndwi",
+  "dataset_version": "phase4-sen1floods11-v1.1-subset-v1",
+  "baseline_metrics": {
+    "reference": "../baselines/evaluation_Mekong_1443339_optical_30m.json",
+    "algorithm_version": "deterministic-water-v2"
+  },
+  "label_classes": {
+    "-1": "ignore",
+    "0": "non-water",
+    "1": "water"
+  },
+  "provenance": {
+    "chip": "Mekong_1443339",
+    "original_split": "test",
+    "crop": "full original chip; no spatial cropping",
+    "native_ground_resolution_m": 10,
+    "resampling": "UTM bilinear imagery / nearest labels; 10/20/30m are derived, not native sensor grades",
+    "source_files": {
+      "S1Hand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/S1Hand/Mekong_1443339_S1Hand.tif",
+        "sha256": "cee6ea28c9f700f7d04b16f036fe504e0e836eab9f1b00420fe332366c985ab3"
+      },
+      "S2Hand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/S2Hand/Mekong_1443339_S2Hand.tif",
+        "sha256": "afbc01a747e5c6d7b6b51c733c92c187323f25d7a24f8f7411836a326b09201b"
+      },
+      "LabelHand": {
+        "url": "https://storage.googleapis.com/sen1floods11/v1.1/data/flood_events/HandLabeled/LabelHand/Mekong_1443339_LabelHand.tif",
+        "sha256": "e306812aaf1587c46f9b2a0c63e4af4fe46ac9fd46a9e6286dd41d70f824454e"
+      }
+    }
+  }
+}

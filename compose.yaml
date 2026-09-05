@@ -1,0 +1,43 @@
+services:
+  web:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+    depends_on:
+      - api
+
+  api:
+    build: .
+    ports:
+      - "${RS_AGENT_API_PORT:-8001}:8000"
+    command: uvicorn rs_agent.api.main:app --host 0.0.0.0 --port 8000
+    environment:
+      RS_AGENT_STATE_DIR: /data/state
+      RS_AGENT_ARTIFACT_DIR: /data/artifacts
+    volumes:
+      - state-data:/data/state
+      - artifact-data:/data/artifacts
+      - ./data:/data/input:ro
+
+  worker:
+    build: .
+    command: rs-agent worker --poll-seconds 1
+    environment:
+      RS_AGENT_STATE_DIR: /data/state
+      RS_AGENT_ARTIFACT_DIR: /data/artifacts
+      # Planner credentials are injected into the worker only; never into web.
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+    volumes:
+      - state-data:/data/state
+      - artifact-data:/data/artifacts
+      - ./data:/data/input:ro
+    depends_on:
+      - api
+
+volumes:
+  state-data:
+  artifact-data:

@@ -93,6 +93,55 @@ class ToolRegistry:
             for contract in self.contracts_for(stage, sensor_type, task_type)
         ]
 
+    @staticmethod
+    def _profiles() -> dict[str, list[dict[str, Any]]]:
+        """Finite, reviewed parameter profiles available to the Planner.
+
+        A profile is an execution-safe parameter configuration, not a per-image
+        prompt-time numeric value. This keeps Phase 2 parameter planning
+        auditable while still allowing the LLM to choose a stage strategy.
+        """
+        return {
+            "image_adapter_normalize": [
+                {"name": "standard", "parameters": {}, "when": "default input normalization"}
+            ],
+            "optical_ndwi": [
+                {"name": "balanced", "parameters": {"threshold": 0.0}, "when": "default"},
+                {"name": "conservative_water", "parameters": {"threshold": 0.1}, "when": "avoid weak water candidates"},
+                {"name": "permissive_water", "parameters": {"threshold": -0.1}, "when": "retain low-contrast water candidates"},
+            ],
+            "sar_adaptive_threshold": [
+                {"name": "conservative_water", "parameters": {"percentile": 25.0}, "when": "avoid broad low-backscatter masks"},
+                {"name": "balanced", "parameters": {"percentile": 35.0}, "when": "default"},
+                {"name": "permissive_water", "parameters": {"percentile": 45.0}, "when": "retain fragmented water candidates"},
+            ],
+            "morphology_and_polygonize": [
+                {"name": "detail_preserving", "parameters": {"min_component_pixels": 4.0}, "when": "small valid objects expected"},
+                {"name": "balanced", "parameters": {"min_component_pixels": 9.0}, "when": "default"},
+                {"name": "noise_reduction", "parameters": {"min_component_pixels": 25.0}, "when": "speckle/noise dominates"},
+            ],
+            "water_statistics_and_geometry_qa": [
+                {"name": "strict", "parameters": {"min_coverage_fraction": 0.0, "max_coverage_fraction": 0.9}, "when": "dominant masks are implausible"},
+                {"name": "balanced", "parameters": {"min_coverage_fraction": 0.0, "max_coverage_fraction": 0.98}, "when": "default"},
+                {"name": "permissive", "parameters": {"min_coverage_fraction": 0.0, "max_coverage_fraction": 0.995}, "when": "large water extent is expected"},
+            ],
+        }
+
+    def profiles_for(self, stage: Stage, sensor_type: str, task_type: str) -> list[dict[str, Any]]:
+        return [
+            profile
+            for contract in self.contracts_for(stage, sensor_type, task_type)
+            for profile in self._profiles().get(contract.name, [])
+        ]
+
+    def validate_profile(
+        self, stage: Stage, sensor_type: str, task_type: str, plan: ExecutionPlan
+    ) -> None:
+        self.validate(stage, sensor_type, task_type, plan)
+        allowed = self._profiles().get(plan.tool, [])
+        if not any(plan.parameters == profile["parameters"] for profile in allowed):
+            raise ValueError(f"Parameters for {plan.tool} must match a registered profile")
+
     def validate(self, stage: Stage, sensor_type: str, task_type: str, plan: ExecutionPlan) -> None:
         contract = self._contracts.get(plan.tool)
         if not contract:

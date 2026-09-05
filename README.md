@@ -59,7 +59,7 @@ docker compose up --build -d worker
 
 2026-09-05 重建后的实际结果与证据见 [Phase 4 验收记录](docs/PHASE4_ACCEPTANCE.md)：24 个正式用例、4 个独立烟测、96 次真实模型成功请求。LLM 本轮精度低于规则基线，详见报告。
 
-针对该结果，当前实现已调整为“真实分支才调用 LLM”：单一合法工具时规划器明确延迟模型调用并锁定规则参数。优化后 24 例复验见 [受约束 LLM 路由策略](docs/LLM_ROUTING_POLICY.md)。
+针对该结果，当前实现已调整为开发文档要求的四个受约束规划点：LLM 在预处理、解译、后处理和 QA 阶段规划工具与已登记的参数档案；报告阶段固定规则执行。详见 [受约束 LLM 规划策略](docs/LLM_ROUTING_POLICY.md)。
 
 Phase 4 的框架测试不等于数据集和真实模型评测已经完成。固定数据准备与批量评测入口如下（读取项目 `.env` 中的模型配置）：
 
@@ -67,7 +67,7 @@ Phase 4 的框架测试不等于数据集和真实模型评测已经完成。固
 .venv/Scripts/python.exe scripts/run_phase4.py --prepare
 ```
 
-该命令下载固定子集，并运行规则与受约束的 LLM 路由策略，输出 `evaluation-output/phase4-/<UTC时间>/evaluation.csv`、`evaluation.json`、`evaluation.html` 及逐任务 evidence。无客户端时禁止宣称 LLM 路由已启用；但若只有一个合法工具分支，策略会明确延迟模型调用并复用规则配置。`--rule-only` 可离线执行规则对照，`--smoke` 仅运行独立的 4 个烟测案例。首次下载需要网络且可能耗时；存在真实分支选择时模型调用会产生服务商费用。
+该命令下载固定子集，并运行规则与受约束的 LLM 规划策略，输出 `evaluation-output/phase4-/<UTC时间>/evaluation.csv`、`evaluation.json`、`evaluation.html` 及逐任务 evidence。无客户端时禁止宣称 LLM 规划已启用。LLM 参数必须匹配工具注册表中有限、可审计的档案；非法计划修复一次后回退规则路由。`--rule-only` 可离线执行规则对照，`--smoke` 仅运行独立的 4 个烟测案例。模型调用会产生服务商费用。
 
 数据采用 Sen1Floods11 v1.1 的 12 个测试切片 × 两种传感器；10/20/30m 为派生网格。STAC 标记 proprietary，不将其宣称为开放许可或随仓库分发。详见 [Phase 4 评测说明](docs/PHASE4_EVALUATION.md)。实际完成情况以有日期的报告为准。
 

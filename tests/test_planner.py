@@ -1,5 +1,5 @@
-from rs_agent.domain import Artifact, Job, JobRequest, Stage, ToolContract
-from rs_agent.planning import Planner, ToolRegistry
+from rs_agent.domain import Artifact, Job, JobRequest, Stage
+from rs_agent.planning import Planner
 
 
 class ScriptedClient:
@@ -12,42 +12,36 @@ class ScriptedClient:
         return next(self.responses)
 
 
-def test_planner_uses_llm_only_when_the_registry_has_a_real_tool_choice():
+def test_planner_repairs_an_invalid_profile_once_then_uses_a_registered_profile():
     client = ScriptedClient(
             [
-                '{"tool":"sar_adaptive_threshold","parameters":{"percentile":35}}',
-                '{"tool":"optical_ndwi_conservative","parameters":{"threshold":0.12},"rationale":"metadata supports conservative optical route"}',
+            '{"tool":"sar_adaptive_threshold","parameters":{"percentile":35}}',
+            '{"tool":"optical_ndwi","parameters":{"threshold":0.1},"rationale":"low contrast water"}',
         ]
     )
-    contracts = ToolRegistry._defaults()
-    contracts.append(
-        ToolContract(
-            name="optical_ndwi_conservative",
-            version="0.1.0",
-            supported_sensor_types=["optical"],
-            supported_task_types=["water_extraction"],
-            input_kinds=["preprocessed_array"],
-            output_kinds=["raw_mask"],
-            applicable_stages=[Stage.INTERPRET],
-            parameter_names=["threshold"],
-        )
-    )
-    planner = Planner(registry=ToolRegistry(contracts), client=client)
+    planner = Planner(client=client)
     job = Job(request=JobRequest(sensor_type="optical"))
     plan = planner.plan(Stage.INTERPRET, job)
-    assert plan.tool == "optical_ndwi_conservative"
-    assert plan.parameters["threshold"] == 0.12
+    assert plan.tool == "optical_ndwi"
+    assert plan.parameters["threshold"] == 0.1
+    assert plan.fallback_tool == "optical_ndwi"
     assert len(client.calls) == 2
 
 
-def test_single_eligible_tool_defers_to_fixed_rule_profile_without_an_llm_call():
-    client = ScriptedClient(['{"tool":"not_registered","parameters":{}}'] * 2)
+def test_planner_calls_llm_at_all_four_documented_planning_points():
+    client = ScriptedClient(
+        [
+            '{"tool":"image_adapter_normalize","parameters":{}}',
+            '{"tool":"sar_adaptive_threshold","parameters":{"percentile":35}}',
+            '{"tool":"morphology_and_polygonize","parameters":{"min_component_pixels":9}}',
+            '{"tool":"water_statistics_and_geometry_qa","parameters":{"min_coverage_fraction":0,"max_coverage_fraction":0.98}}',
+        ]
+    )
     planner = Planner(client=client)
-    plan = planner.plan(Stage.INTERPRET, Job(request=JobRequest(sensor_type="sar")))
-    assert plan.tool == "sar_adaptive_threshold"
-    assert plan.parameters == {"percentile": 35.0}
-    assert client.calls == []
-    assert planner.last_decision["source"] == "rule_single_eligible_route"
+    job = Job(request=JobRequest(sensor_type="sar"))
+    for stage in (Stage.PREPROCESS, Stage.INTERPRET, Stage.POSTPROCESS, Stage.QA):
+        assert planner.plan(stage, job).fallback_tool is not None
+    assert len(client.calls) == 4
 
 
 def test_planner_context_has_artifact_references_and_diagnostics_not_raw_data():
@@ -57,5 +51,6 @@ def test_planner_context_has_artifact_references_and_diagnostics_not_raw_data():
     job.artifacts.append(Artifact(uri="artifact://abc", sha256="abc", kind="preprocessed_array"))
     context = planner.context(Stage.INTERPRET, job)
     assert context["artifacts"][0]["uri"] == "artifact://abc"
-    assert context["routing_policy"]["decision_type"] == "tool_choice_only"
+    assert context["routing_policy"]["decision_type"] == "tool_and_registered_parameter_profile"
+    assert context["routing_policy"]["registered_parameter_profiles"]
     assert "pixel_values" not in str(context)

@@ -86,3 +86,36 @@ def test_optical_multispectral_geotiff_produces_building_artifacts(tmp_path):
     done = engine.run(engine.submit(Job(request=JobRequest(task_type="building_extraction", sensor_type="optical", image_uri=str(source), band_indices={"nir": 7, "swir": 11}))).job_id)
     assert done.status is JobStatus.COMPLETED
     assert "building_mask_geotiff" in {artifact.kind for artifact in done.artifacts}
+
+
+def test_optical_rgb_geotiff_uses_building_colour_index_fallback(tmp_path):
+    source = tmp_path / "rgb_buildings.tif"
+    raster = np.full((3, 20, 20), 30, dtype="uint8")
+    raster[:, :10, :] = 220  # Bright neutral roof-like region.
+    with rasterio.open(
+        source,
+        "w",
+        driver="GTiff",
+        height=20,
+        width=20,
+        count=3,
+        dtype="uint8",
+        crs="EPSG:3857",
+        transform=from_origin(0, 200, 1, 1),
+    ) as dst:
+        dst.write(raster)
+    engine = WorkflowEngine(
+        SQLiteStateStore(tmp_path / "state" / "jobs.sqlite3"),
+        LocalArtifactStore(tmp_path / "artifacts"),
+    )
+    done = engine.run(
+        engine.submit(
+            Job(
+                request=JobRequest(
+                    task_type="building_extraction", sensor_type="optical", image_uri=str(source)
+                )
+            )
+        ).job_id
+    )
+    assert done.status is JobStatus.COMPLETED
+    assert "building_mask_geotiff" in {artifact.kind for artifact in done.artifacts}

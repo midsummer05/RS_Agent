@@ -198,14 +198,33 @@ class DeterministicToolchain:
     def _extract_buildings(
         image: np.ndarray, bands: dict[str, int], parameters: dict[str, Any]
     ) -> tuple[np.ndarray, dict[str, float]]:
-        """NDBI-like optical baseline; needs NIR and SWIR, never used for SAR."""
+        """NDBI-like multispectral or colour-index RGB building baseline."""
         nir = bands.get("nir", 7 if image.shape[-1] > 7 else -1)
         swir = bands.get("swir", 11 if image.shape[-1] > 11 else -1)
-        if not (0 <= nir < image.shape[-1] and 0 <= swir < image.shape[-1]):
-            raise ValueError("optical_built_index requires configured NIR and SWIR bands")
-        index = (image[..., swir] - image[..., nir]) / (image[..., swir] + image[..., nir] + 1e-6)
         threshold = float(parameters.get("threshold", 0.0))
-        return index > threshold, {"built_index_threshold": threshold}
+        if 0 <= nir < image.shape[-1] and 0 <= swir < image.shape[-1]:
+            index = (image[..., swir] - image[..., nir]) / (
+                image[..., swir] + image[..., nir] + 1e-6
+            )
+            return index > threshold, {
+                "building_index": "ndbi_like_swir_nir",
+                "built_index_threshold": threshold,
+            }
+        if image.shape[-1] < 3:
+            raise ValueError("optical_built_index requires RGB or configured NIR and SWIR bands")
+        # RGB fallback for aerial RGB products: bright, low-saturation roof candidates.
+        # The median centring makes the same finite threshold profiles meaningful across
+        # reflectance and uint8-derived normalised inputs.  It is a non-trained baseline.
+        rgb = image[..., :3].astype("float32")
+        brightness = rgb.mean(axis=-1)
+        saturation = (rgb.max(axis=-1) - rgb.min(axis=-1)) / (rgb.max(axis=-1) + 1e-6)
+        index = brightness * (1.0 - saturation)
+        centre = float(np.nanmedian(index))
+        return index - centre > threshold, {
+            "building_index": "rgb_brightness_low_saturation",
+            "built_index_threshold": threshold,
+            "rgb_index_median": centre,
+        }
 
     @staticmethod
     def _cleanup(mask: np.ndarray, min_component_pixels: int = 9) -> np.ndarray:

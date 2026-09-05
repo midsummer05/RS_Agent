@@ -7,7 +7,9 @@ Each JSON file is one immutable labelled case and conforms to `EvaluationCase`.
 - `image_uri` and `label_uri` may be relative to the manifest. Labels use 1=water, 0=non-water; -1/nodata and other classes are excluded from scoring, never cast directly to Boolean.
 - Record source URL, license, sensor type, bands, CRS, resolution, bounds and hashes. Do not add unlicensed data or per-case tuned parameters.
 
-The fixed corpus contains 24 evaluation manifests (12 optical + 12 SAR) and 4 disjoint smoke manifests. These correspond to 12 evaluation scene pairs and 2 smoke scene pairs. Resolution tiers are derived UTM 10/20/30m grids.
+The water corpus contains 24 evaluation manifests (12 optical + 12 SAR) and 4 disjoint smoke manifests. These correspond to 12 evaluation scene pairs and 2 smoke scene pairs. Resolution tiers are derived UTM 10/20/30m grids.
+
+The building corpus adds 12 fixed optical evaluation manifests from the WHU Building Dataset test split. Run `.venv/Scripts/python.exe scripts/run_building_phase4.py --prepare` to acquire and evaluate it. Its source PNGs do not carry CRS/geolocation; conversion uses a clearly marked local metric grid only to satisfy the GeoTIFF workflow contract, and must not be presented as original geographic metadata.
 
 Run `.venv/Scripts/python.exe scripts/run_phase4.py --prepare` from the project root. It reads the project `.env`, downloads missing public research inputs, and writes separate rule/real-LLM reports. Missing credentials are an error, not a silently substituted rule run. `--rule-only` makes no model calls; `--smoke` excludes all evaluation cases.
 

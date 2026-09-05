@@ -1,0 +1,8 @@
+{
+  "version": "deterministic-building-rgb-v1",
+  "iou": 0.2874197860962567,
+  "f1": 0.44650515581677896,
+  "area_error_fraction": 1.0950873415077056,
+  "object_count_error": 33,
+  "status": "completed"
+}

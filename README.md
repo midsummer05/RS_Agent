@@ -73,7 +73,15 @@ Phase 4 的框架测试不等于数据集和真实模型评测已经完成。固
 
 ## Building task and QA evaluation
 
-光学多光谱输入可提交 `task_type: "building_extraction"`；当前基线为受约束的 NIR/SWIR built-index，必须明确提供或具备 NIR、SWIR 波段。SAR 建筑物请求会在契约层拒绝。其掩膜、矢量、统计和报告与水体任务走同一状态机和 checkpoint 链路。
+光学输入可提交 `task_type: "building_extraction"`；当前基线优先使用 NIR/SWIR built-index，RGB 航片则使用亮度/低饱和度颜色指数回退。两者均为免训练、受固定阈值档案约束的基线。SAR 建筑物请求会在契约层拒绝。其掩膜、矢量、统计和报告与水体任务走同一状态机和 checkpoint 链路。
+
+真实带标注建筑物评测库固定为 WHU Building Dataset public test split 的 12 张 RGB/二元掩膜切片，下载后小于 100MB：
+
+```powershell
+.venv/Scripts/python.exe scripts/run_building_phase4.py --prepare
+```
+
+该命令只运行规则基线并生成 CSV/JSON/HTML 及任务级证据；它不会把规则路由冒充为 LLM 评测。数据来源、许可、选择规则与没有原始 CRS 的限制见 [建筑物评测说明](docs/BUILDING_PHASE4_EVALUATION.md)。
 
 QA 召回率评测独立于遥感分割指标：`.venv/Scripts/python.exe scripts/evaluate_qa.py`。固定异常与正常对照、指标定义和边界见 [QA 评测说明](docs/QA_EVALUATION.md)。
 

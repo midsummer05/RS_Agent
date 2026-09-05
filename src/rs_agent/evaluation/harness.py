@@ -59,14 +59,20 @@ class EvaluationHarness:
         self.run_id = uuid4().hex
 
     @staticmethod
-    def load_cases(manifest_dir: str | Path, include_smoke: bool = False) -> list[EvaluationCase]:
+    def load_cases(
+        manifest_dir: str | Path,
+        include_smoke: bool = False,
+        task_type: str | None = None,
+    ) -> list[EvaluationCase]:
         cases: list[EvaluationCase] = []
         for path in sorted(Path(manifest_dir).glob("*.json")):
             case = EvaluationCase.model_validate_json(
                 path.read_text(encoding="utf-8")
             ).resolve_paths(path)
             case.validate_files()
-            if include_smoke or case.split == "evaluation":
+            if (include_smoke or case.split == "evaluation") and (
+                task_type is None or case.task_type == task_type
+            ):
                 cases.append(case)
         if not cases:
             raise ValueError("No evaluation manifests found")

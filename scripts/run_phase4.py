@@ -34,7 +34,9 @@ def main():
         from prepare_phase4 import main as prepare
 
         prepare()
-    cases = EvaluationHarness.load_cases(ROOT / "data/manifests", include_smoke=args.smoke)
+    cases = EvaluationHarness.load_cases(
+        ROOT / "data/manifests", include_smoke=args.smoke, task_type="water_extraction"
+    )
     if args.smoke:
         cases = [c for c in cases if c.split == "smoke"]
         assert len(cases) == 4

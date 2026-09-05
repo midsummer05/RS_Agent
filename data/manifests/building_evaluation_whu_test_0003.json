@@ -1,0 +1,56 @@
+{
+  "case_id": "building_evaluation_whu_test_0003",
+  "split": "evaluation",
+  "task_type": "building_extraction",
+  "sensor_type": "optical",
+  "image_uri": "../samples/whu-building-hf-mirror-test12-v1/test_0003_image.tif",
+  "label_uri": "../samples/whu-building-hf-mirror-test12-v1/test_0003_label.tif",
+  "source": {
+    "name": "WHU Building Dataset (Hugging Face public mirror)",
+    "url": "https://huggingface.co/datasets/giswqs/WHU-Building-Dataset",
+    "license": "CC-BY-4.0"
+  },
+  "acquisition_date": null,
+  "bands": {
+    "red": 0,
+    "green": 1,
+    "blue": 2
+  },
+  "crs": "EPSG:3857",
+  "resolution": 0.3,
+  "bounds": [
+    0.0,
+    0.0,
+    153.6,
+    153.6
+  ],
+  "image_sha256": "a665c6deb8b049449b2eb96f804dd23facc19cfbf431b0905aee07845c4996a8",
+  "label_sha256": "2af6d927be621197034be5381af7de69317b83cc1cd7171d675d7a267134e132",
+  "expected_interpret_tool": "optical_built_index",
+  "dataset_version": "whu-building-hf-mirror-test12-v1",
+  "baseline_metrics": {
+    "reference": "../baselines/building_evaluation_whu_test_0003.json",
+    "algorithm_version": "deterministic-building-rgb-v1"
+  },
+  "label_classes": {
+    "0": "non-building",
+    "1": "building"
+  },
+  "provenance": {
+    "original_split": "test",
+    "source_tile": "test_0003",
+    "crop": "full 512x512 source tile; no crop or label-based selection",
+    "native_ground_resolution_m": 0.3,
+    "source_georeferencing": "not supplied with source PNG; local EPSG:3857 metric grid uses synthetic origin only for workflow compatibility, not a claimed location",
+    "source_files": {
+      "image": {
+        "url": "https://huggingface.co/datasets/giswqs/WHU-Building-Dataset/resolve/main/test/Image/test_0003.png",
+        "sha256": "741b82b9b936d144ab8768eec70442594e7149226c57e5a443c290ff9029432a"
+      },
+      "label": {
+        "url": "https://huggingface.co/datasets/giswqs/WHU-Building-Dataset/resolve/main/test/Mask/test_0003.png",
+        "sha256": "c03f5e9b72385687468a2e43e5a4c2add52c6ef812bde4be1325a98140c7d566"
+      }
+    }
+  }
+}

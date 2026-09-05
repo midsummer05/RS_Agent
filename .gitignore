@@ -10,6 +10,7 @@ data/labels/
 data/models/
 data/sources/
 data/samples/sen1floods11-v1.1/
+data/samples/whu-building-hf-mirror-test12-v1/
 data/*.log
 state/
 traces/

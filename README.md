@@ -81,7 +81,9 @@ Phase 4 的框架测试不等于数据集和真实模型评测已经完成。固
 .venv/Scripts/python.exe scripts/run_building_phase4.py --prepare
 ```
 
-该命令只运行规则基线并生成 CSV/JSON/HTML 及任务级证据；它不会把规则路由冒充为 LLM 评测。数据来源、许可、选择规则与没有原始 CRS 的限制见 [建筑物评测说明](docs/BUILDING_PHASE4_EVALUATION.md)。
+该命令生成规则/LLM 对照的 CSV、JSON、HTML 及任务级证据；缺少模型配置时会明确失败，绝不把规则路由冒充为 LLM 评测。数据来源、许可、选择规则与没有原始 CRS 的限制见 [建筑物评测说明](docs/BUILDING_PHASE4_EVALUATION.md)。
+
+默认命令会同时运行规则与真实 DeepSeek 规划对照（必须已在 `.env` 配置模型）；`--rule-only` 才是不发起模型请求的离线模式。
 
 QA 召回率评测独立于遥感分割指标：`.venv/Scripts/python.exe scripts/evaluate_qa.py`。固定异常与正常对照、指标定义和边界见 [QA 评测说明](docs/QA_EVALUATION.md)。
 
